@@ -10,14 +10,6 @@ def display_image(image):
     plt.show()
 
 
-def neural_network(input1, input2, w1, w2, bias):
-    return sigmoid(input1 * w1 + input2 * w2 + bias)
-
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-
 def convert_rgb_to_grayscale(images):
     # converts numpy.ndarray of rgb images to numpy.ndarray of grayscale images
     img_rows, img_cols = 28, 28
