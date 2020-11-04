@@ -17,5 +17,5 @@ class NeuralNetwork:
         weights = {}
         for i in range(1, len(self.sizes)):
             print(self.sizes[i-1], self.sizes[i])
-            weights[i-i] = np.random.randn(self.sizes[i], self.sizes[i-1]) * np.sqrt(1. / self.sizes[i])
+            weights[i-1] = np.random.randn(self.sizes[i], self.sizes[i-1]) * np.sqrt(1. / self.sizes[i])
         return weights
