@@ -14,6 +14,9 @@ class NeuralNetwork:
     def sigmoid(x):
         return 1 / (1 + np.exp(-x))
 
+    def sigmoid_derivative(self, x):
+        return self.sigmoid(x) * (1 - self.sigmoid(x))
+
     def initialize_weights(self):
         weights = {}
         for i in range(1, len(self.sizes)):
@@ -27,4 +30,5 @@ class NeuralNetwork:
         for i in range(len(self.weights)):
             layer = self.neural_network(layer, self.weights[i])
 
-
+        print(layer)
+        print(np.argmax(layer, axis=0)[0])
