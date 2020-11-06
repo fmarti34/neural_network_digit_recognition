@@ -34,5 +34,21 @@ class NeuralNetwork:
         for i in range(len(self.weights)):
             layer = self.neural_network(layer, self.weights[i])
 
-        print(layer)
-        print(np.argmax(layer, axis=0)[0])
+        # print(np.argmax(layer, axis=0)[0])
+        return layer
+
+    def train(self, data, labels, iterations=1):
+
+        for _ in range(iterations):
+            for i in range(len(data)):
+                prediction = self.forward_pass(data[i])
+
+                # initialize a 10 by 1 vector of the desired output
+                target = np.zeros([10, 1], dtype=int)
+                target[labels[i]] = 1
+
+                print(prediction, self.cost(prediction, target))
+                break
+
+
+
