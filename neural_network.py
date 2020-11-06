@@ -14,6 +14,10 @@ class NeuralNetwork:
     def sigmoid(x):
         return 1 / (1 + np.exp(-x))
 
+    @staticmethod
+    def cost(prediction, target):
+        return (prediction - target) ** 2
+
     def sigmoid_derivative(self, x):
         return self.sigmoid(x) * (1 - self.sigmoid(x))
 
