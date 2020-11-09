@@ -54,6 +54,12 @@ class NeuralNetwork:
 
     def update_weights(self):
         for i in range(len(self.nodes) - 1, 0, -1):
+            gradient = self.learning_rate * self.error_nodes[i] * self.sigmoid_derivative(self.nodes[i])
+            self.weights[i-1] += gradient * self.nodes[i-1].T
+            self.bias[i-1] += gradient
+
+    def update_bias(self):
+        for i in range(len(self.nodes) - 1, 0, -1):
             self.weights[i-1] += self.learning_rate * self.error_nodes[i] * self.sigmoid_derivative(self.nodes[i]) \
                                  * self.nodes[i-1].T
 
@@ -66,7 +72,7 @@ class NeuralNetwork:
 
         self.update_weights()
 
-    def train(self, data, labels, iterations=1):
+    def train(self, data, labels, iterations=100):
         for _ in range(iterations):
             for i in range(len(data)):
                 prediction = self.forward_pass(data[i])
