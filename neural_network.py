@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm.auto import trange
 
 
 class NeuralNetwork:
@@ -72,9 +73,9 @@ class NeuralNetwork:
 
         self.update_weights()
 
-    def train(self, data, labels, iterations=100):
-        for _ in range(iterations):
-            for i in range(len(data)):
+    def train(self, data, labels, iterations=5):
+        for iter in range(iterations):
+            for i in trange(len(data),  desc=str(iter) + '/' + str(iterations)):
                 prediction = self.forward_pass(data[i])
 
                 # initialize a 10 by 1 matrix of the desired output
