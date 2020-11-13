@@ -3,8 +3,9 @@ pygame.init()
 
 
 class Button:
-    def __init__(self, color, x, y, width, height, text, text_color=None):
-        self.color = color
+    def __init__(self, color1, color2, x, y, width, height, text, text_color=None):
+        self.color1 = color1
+        self.color2 = color2
         self.x = x
         self.y = y
         self.width = width
@@ -12,15 +13,18 @@ class Button:
         self.text = text
         self.text_color = text_color
 
-    def draw(self, win):
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
+    def draw(self, win, is_over):
+        if is_over:
+            pygame.draw.rect(win, self.color2, (self.x, self.y, self.width, self.height), 0)
+        else:
+            pygame.draw.rect(win, self.color1, (self.x, self.y, self.width, self.height), 0)
 
         if self.text != '':
             font = pygame.font.Font('freesansbold.ttf', 30)
             text = font.render(self.text, 1, (0, 0, 0))
             win.blit(text, (self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
-    def isOver(self, pos):
+    def is_over(self, pos):
         # Pos is the mouse position or a tuple of (x,y) coordinates
         if self.x + self.width > pos[0] > self.x and self.y + self.height > pos[1] > self.y:
             return True
@@ -28,21 +32,16 @@ class Button:
             return False
 
 
-WIDTH, HEIGHT = 600, 800
+WIDTH, HEIGHT = 600, 600
 BTN_WIDTH, BTN_HEIGHT = WIDTH/2, HEIGHT/8
-GREEN = [160, 210, 219]
-RED = [254, 192, 170]
-CLEAR_BTN = Button(RED, 0, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'CLEAR')
-PREDICT_BTN = Button(GREEN, WIDTH/2, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'PREDICT')
+LIGHT_BLUE = [160, 210, 219]
+MELON = [254, 192, 170]
+LIGHT_GREEN = [145, 226, 131]
+CLEAR_BTN = Button(MELON, LIGHT_GREEN,  0, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'CLEAR')
+PREDICT_BTN = Button(LIGHT_BLUE, LIGHT_GREEN, WIDTH/2, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'PREDICT')
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Digit Recognition')
-
-
-
-
-CLEAR_BTN.draw(screen)
-PREDICT_BTN.draw(screen)
 
 
 def round_line(srf, color, start, end, radius=1):
@@ -74,5 +73,8 @@ def display():
                     pygame.draw.circle(screen, color, event.pos, radius)
                     round_line(screen, color, event.pos, last_pos, radius)
                 last_pos = event.pos
+            pos = pygame.mouse.get_pos()
+            CLEAR_BTN.draw(screen, CLEAR_BTN.is_over(pos))
+            PREDICT_BTN.draw(screen, PREDICT_BTN.is_over(pos))
         pygame.display.flip()
 display()
