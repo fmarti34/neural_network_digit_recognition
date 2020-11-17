@@ -8,7 +8,7 @@ class NeuralNetwork:
         self.sizes = sizes
         self.bias = self.initialize_bias()
         self.weights = self.initialize_weights()
-        self.learning_rate = 0.001
+        self.learning_rate = 0.01
         self.nodes = {}
         self.error_nodes = {}
 
