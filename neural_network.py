@@ -20,8 +20,6 @@ class NeuralNetwork:
             self.weights = self.initialize_weights()
         else:
             self.trained = True
-            self.biases = self.initialize_bias()
-            self.weights = self.initialize_weights()
 
     @staticmethod
     def sigmoid(x):
