@@ -1,16 +1,24 @@
 import pygame
 import os
 from button import Button
-
-
+from neural_network import NeuralNetwork
+import numpy as np
+from PIL import Image
 
 pygame.init()
+
+# Initialize neural network
+layers = [784, 512, 256, 10]  # Input layer: 784; 2 Hidden layers: 512, 256; 1 output layer: 10
+NN = NeuralNetwork(layers)
 
 # get the current working directory
 DIR = os.getcwd()
 
+# Image directory
+IMAGE_DIR = DIR + '/screenshot.jpg'
+
 # Dimensions
-WIDTH, HEIGHT = 600, 600
+WIDTH, HEIGHT = 280, 280
 BTN_WIDTH, BTN_HEIGHT = WIDTH/2, HEIGHT/8
 
 # Colors
@@ -43,7 +51,29 @@ def round_line(srf, color, start, end, radius=1):
 def take_screenshot():
     rect = pygame.Rect(0, 0, WIDTH, HEIGHT-BTN_HEIGHT)
     sub = screen.subsurface(rect)
-    pygame.image.save(sub, DIR + '/screenshot.jpg')
+    pygame.image.save(sub, IMAGE_DIR)
+
+
+    # im = Image.open(IMAGE_DIR)
+    # im_resized = im.resize((28, 28), Image.ANTIALIAS)
+    # image = np.asarray(im_resized)
+    # print(image.shape)
+    # im_resized.save(IMAGE_DIR, "JPEG", optimize=True)
+
+    img = Image.open(IMAGE_DIR)
+    img_resized = img.resize((28, 28), Image.ANTIALIAS)
+    image = np.mean(img_resized, axis=2)
+    img = Image.fromarray(image)
+    img = img.convert('L')
+    img.save(IMAGE_DIR)
+
+
+def predict_image():
+    with Image.open(IMAGE_DIR) as image:
+        image = np.asarray(image)
+        print(image.shape)
+        print(NN.predict_image(image))
+        os.system('say the number is ' + str(NN.predict_image(image)))
 
 
 def display():
@@ -60,8 +90,8 @@ def display():
                 if CLEAR_BTN.is_over(pos):
                     screen.fill(BLACK)
                 elif PREDICT_BTN.is_over(pos):
-                    # pygame.draw.rect(screen, WHITE, pygame.Rect(0, 0, WIDTH, HEIGHT-BTN_HEIGHT))
                     take_screenshot()
+                    predict_image()
                 else:
                     pygame.draw.circle(screen, WHITE, event.pos, radius)
                     draw_on = True
