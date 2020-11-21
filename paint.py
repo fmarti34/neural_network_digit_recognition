@@ -38,28 +38,34 @@ CLEAR_BTN = Button(pygame, MELON, RED,  0, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEI
 PREDICT_BTN = Button(pygame, LIGHT_BLUE, LIGHT_GREEN, WIDTH/2, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'PREDICT', BLACK, WHITE)
 
 
-def round_line(srf, color, start, end, radius=1):
+def round_line(scr, color, start, end, radius=1):
+    """
+    Draws line on screen
+
+    :param scr: pygame.Surface
+    :param color: list
+    :param start: tuple
+    :param end: tuple
+    :param radius: int
+    """
     dx = end[0]-start[0]
     dy = end[1]-start[1]
     distance = max(abs(dx), abs(dy))
     for i in range(distance):
         x = int(start[0]+float(i)/distance*dx)
         y = int(start[1]+float(i)/distance*dy)
-        pygame.draw.circle(srf, color, (x, y), radius)
+        pygame.draw.circle(scr, color, (x, y), radius)
 
 
 def take_screenshot():
+    """
+    takes a screenshot of drawable portion of game screen
+    """
     rect = pygame.Rect(0, 0, WIDTH, HEIGHT-BTN_HEIGHT)
     sub = screen.subsurface(rect)
     pygame.image.save(sub, IMAGE_DIR)
 
-
-    # im = Image.open(IMAGE_DIR)
-    # im_resized = im.resize((28, 28), Image.ANTIALIAS)
-    # image = np.asarray(im_resized)
-    # print(image.shape)
-    # im_resized.save(IMAGE_DIR, "JPEG", optimize=True)
-
+    # converts screenshot to a 28x28 image
     img = Image.open(IMAGE_DIR)
     img_resized = img.resize((28, 28), Image.ANTIALIAS)
     image = np.mean(img_resized, axis=2)
@@ -69,14 +75,20 @@ def take_screenshot():
 
 
 def predict_image():
+    """
+    Displays and says the number predicted by the neural network
+    """
     with Image.open(IMAGE_DIR) as image:
         image = np.asarray(image)
-        print(image.shape)
-        print(NN.predict_image(image))
-        os.system('say the number is ' + str(NN.predict_image(image)))
+        number = str(NN.predict_image(image))
+        print(number)
+        os.system('say the number is ' + number)
 
 
 def display():
+    """
+    Main game loop
+    """
     draw_on = False
     last_pos = [0, 0]
     radius = 10
