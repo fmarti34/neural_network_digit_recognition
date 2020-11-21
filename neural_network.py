@@ -11,8 +11,8 @@ class NeuralNetwork:
         """
         :param sizes: list
             A list of integers used to determine the sizes of the input, hidden, and output layers.
-            ex: [784, 128, 10] : Will initialize a 784x128 matrix of weights and bias. Also, it will initialize a
-                                 128x10 matrix of weights and bias.
+            ex: [784, 128, 10] : Will initialize a 128x784 matrix of weights and a 128x1 matrix of biases.
+                                 Also, it will initialize a 10x128 matrix of weights and a 10x1 matrix of biases.
         :param train: boolean, optional
             When this flag is true it will randomize the biases and weights even if it can load model from disk
         """
@@ -82,7 +82,6 @@ class NeuralNetwork:
 
         :return: dict
         """
-
         bias = {}
         for i in range(1, len(self.sizes)):
             bias[i-1] = np.random.randn(self.sizes[i], 1) * np.sqrt(1. / self.sizes[i])
@@ -101,12 +100,11 @@ class NeuralNetwork:
         except FileNotFoundError as e:
             print('ERROR: Could not save files successfully: ' + e)
 
-
-
     def load(self):
         """
-            Loads weights and biases from disk
-            :return: Boolean
+        Loads weights and biases from disk
+
+        :return: Boolean
         """
         try:
             with open(DIR + '/model/weights.pickle', 'rb') as handle:
@@ -127,7 +125,6 @@ class NeuralNetwork:
         :return: numpy.ndarray
             This is the output layer
         """
-
         self.nodes[0] = layer = image.reshape((28, 28)).reshape(28 ** 2, 1)  # convert image to 784x1 matrix
 
         for i in range(len(self.weights)):
@@ -146,30 +143,27 @@ class NeuralNetwork:
         return np.argmax(self.forward_pass(image), axis=0)[0]
 
     def update_weights_iter(self, target):
+        """
+        Updates weights and biases like update_parameters() but for n amount of hidden layers
+        todo: correctly update weights and biases!
 
+        :param target: numpy.ndarray
+        """
         index = len(self.weights) - 1
-        # print(index)
         self.weights[index] += self.learning_rate * (target - self.nodes[index+1]).dot(self.nodes[index].T)
         self.biases[index] += self.learning_rate * (target - self.nodes[index + 1]).sum()
 
-        # self.weights[2] += self.learning_rate * (target - self.nodes[3]).dot(self.nodes[2].T)
-        # self.bias[2] += self.learning_rate * (target - self.nodes[3]).sum()
-
         for i in range(len(self.weights)-2, -1, -1):
-            # print(i)
             gradient = self.weights[i+1].T.dot(2*(self.error_nodes[i+2] - self.nodes[i+2])) * self.sigmoid_derivative(self.nodes[i+1])
             self.weights[i] += self.learning_rate * gradient.dot(self.nodes[i].T)
             self.biases[i] += self.learning_rate * gradient
 
-        # gradient = self.weights[2].T.dot(target - self.nodes[3]) * self.sigmoid_derivative(self.nodes[2])
-        # self.weights[1] += self.learning_rate * gradient.dot(self.nodes[1].T)
-        # self.bias[1] += self.learning_rate * gradient
+    def update_parameters(self, target):
+        """
+        Updates weights and biases
 
-        # gradient = self.weights[1].T.dot(self.error_nodes[2]) * self.sigmoid_derivative(self.nodes[1])
-        # self.weights[0] += self.learning_rate * gradient.dot(self.nodes[0].T)
-        # self.bias[0] += self.learning_rate * gradient
-
-    def update_weights(self, target):
+        :param target: numpy.ndarray
+        """
         self.weights[2] += self.learning_rate * (target - self.nodes[3]).dot(self.nodes[2].T)
         self.biases[2] += self.learning_rate * (target - self.nodes[3]).sum()
 
@@ -181,34 +175,36 @@ class NeuralNetwork:
         self.weights[0] += self.learning_rate * gradient.dot(self.nodes[0].T)
         self.biases[0] += self.learning_rate * gradient
 
-    def update_bias(self):
-        for i in range(len(self.nodes) - 1, 0, -1):
-            self.weights[i-1] += self.learning_rate * self.error_nodes[i] * self.sigmoid_derivative(self.nodes[i]) \
-                                 * self.nodes[i-1].T
+    def backpropagation(self, prediction, target):
+        """
+        This is the backpropagation algorithm, for calculating the updates
+        of the neural network's parameters.
 
-    def back_propagation(self, prediction, target):
+        :param prediction: numpy.ndarray
+        :param target: numpy.ndarray
+        """
         self.error_nodes[len(self.weights)] = layer = self.squared_error_cost(prediction, target)
 
         for i in range(len(self.weights)-1, -1, -1):
             layer = np.dot(self.weights[i].T, layer)
             self.error_nodes[i] = layer
 
-        self.update_weights(target)
+        self.update_parameters(target)
 
-    def train(self, data, labels, iterations=5):
-        for iter in range(iterations):
-            for i in trange(len(data),  desc=str(iter) + '/' + str(iterations)):
+    def train(self, data, labels, epochs=5):
+        """
+        Trains model by using the corresponding data and label. The method expects Label[i] to be the label of data[i]
+
+        :param data: numpy.ndarray
+        :param labels: numpy.ndarray
+        :param epochs: int, optional
+        """
+        for epoch in range(epochs):
+            for i in trange(len(data), desc=str(epoch) + '/' + str(epochs)):
                 prediction = self.forward_pass(data[i])
-
-                # if i % 10 == 0:
-                #     self.predict_image(data[i])
-                #     time.sleep(1)
 
                 # initialize a 10 by 1 matrix of the desired output
                 target = np.zeros([10, 1], dtype=int)
                 target[labels[i]] = 1
 
-
-                self.back_propagation(prediction, target)
-                # print(self.nodes)
-        self.save()
+                self.backpropagation(prediction, target)
