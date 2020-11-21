@@ -142,7 +142,7 @@ class NeuralNetwork:
         """
         return np.argmax(self.forward_pass(image), axis=0)[0]
 
-    def update_weights_iter(self, target):
+    def update_parameters_iter(self, target):
         """
         Updates weights and biases like update_parameters() but for n amount of hidden layers
         todo: correctly update weights and biases!
