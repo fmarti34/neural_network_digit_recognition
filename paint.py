@@ -79,7 +79,10 @@ def predict_image():
     Displays and says the number predicted by the neural network
     """
     with Image.open(IMAGE_DIR) as image:
-        image = np.asarray(image)
+        image = np.array(image)
+        image = image.reshape(28, 28, 1)
+        image = image.astype(np.float64)
+        image /= 255
         number = str(NN.predict_image(image))
         print(number)
         os.system('say the number is ' + number)
