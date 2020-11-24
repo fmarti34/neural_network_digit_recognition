@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from neural_network import NeuralNetwork
 from matplotlib import pyplot as plt
 
 
@@ -22,5 +23,20 @@ def convert_rgb_to_grayscale(images):
 (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data(path="mnist.npz")
 train_images = convert_rgb_to_grayscale(train_images)
 test_images = convert_rgb_to_grayscale(test_images)
-pixels = train_images[0].reshape((28, 28))
 
+
+best = [784, 512, 256, 10]   # [784, 512, 256, 10] - (0.905/ 5) (0.9249/ 10)
+nn = NeuralNetwork(best, train=True)
+nn.train(train_images, train_labels, epochs=10)
+
+
+c = 0
+for img, label in zip(test_images, test_labels):
+    if nn.predict_image(img) == label:
+        c += 1
+
+accuracy = c/len(test_labels)
+print(accuracy, c)
+
+if accuracy > 0.9269:
+    nn.save()

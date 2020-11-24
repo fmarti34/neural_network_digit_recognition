@@ -1,8 +1,8 @@
 import pygame
 import os
+import numpy as np
 from button import Button
 from neural_network import NeuralNetwork
-import numpy as np
 from PIL import Image
 
 pygame.init()
@@ -18,24 +18,24 @@ DIR = os.getcwd()
 IMAGE_DIR = DIR + '/screenshot.jpg'
 
 # Dimensions
-WIDTH, HEIGHT = 280, 280
+WIDTH, HEIGHT = 400, 400
 BTN_WIDTH, BTN_HEIGHT = WIDTH/2, HEIGHT/8
 
 # Colors
 BLACK = [0, 0, 0]
 WHITE = [255, 255, 255]
-LIGHT_BLUE = [160, 210, 219]
 MELON = [254, 192, 170]
 RED = [237, 69, 81]
-LIGHT_GREEN = [145, 226, 131]
+LIGHT_GREEN = [92, 224, 70]
+DARK_GREEN = [80, 200, 80]
 
 # Screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Digit Recognition')
 
 # Buttons
-CLEAR_BTN = Button(pygame, MELON, RED,  0, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'CLEAR', BLACK, WHITE)
-PREDICT_BTN = Button(pygame, LIGHT_BLUE, LIGHT_GREEN, WIDTH/2, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'PREDICT', BLACK, WHITE)
+CLEAR_BTN = Button(pygame, RED, MELON,  0, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'CLEAR', BLACK, WHITE)
+PREDICT_BTN = Button(pygame, DARK_GREEN, LIGHT_GREEN, WIDTH/2, HEIGHT-BTN_HEIGHT, BTN_WIDTH, BTN_HEIGHT, 'PREDICT', BLACK, WHITE)
 
 
 def round_line(scr, color, start, end, radius=1):
@@ -84,7 +84,7 @@ def predict_image():
         image = image.astype(np.float64)
         image /= 255
         number = str(NN.predict_image(image))
-        print(number)
+        print('The number is ' + number)
         os.system('say the number is ' + number)
 
 
@@ -94,7 +94,7 @@ def display():
     """
     draw_on = False
     last_pos = [0, 0]
-    radius = 10
+    radius = 20
     while True:
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -120,4 +120,6 @@ def display():
             CLEAR_BTN.draw(screen, CLEAR_BTN.is_over(pos))
             PREDICT_BTN.draw(screen, PREDICT_BTN.is_over(pos))
         pygame.display.flip()
+
+
 display()
