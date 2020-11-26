@@ -16,6 +16,7 @@ python3 paint.py
 ```
 This will load model that is saved in /model and allow user to draw digits on UI.
 
+## Train
 ```bash
 python3 train.py
 ```
